@@ -7,6 +7,9 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
 from django.utils import timezone
+from django.contrib.auth.models import User
+from stripe.api_resources import order
+
 from .forms import CheckoutForm, CouponForm, RefundForm
 from .models import Item, OrderItem, Order, BillingAddress, Payment, Coupon, Refund, Category
 from django.http import HttpResponseRedirect
@@ -16,6 +19,7 @@ from django.shortcuts import render_to_response
 import random
 import string
 import stripe
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -41,11 +45,12 @@ class PaymentView(View):
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
         token = self.request.POST.get('stripeToken')
+        # todo: needed to check whether it is calculating correctly or not
         amount = int(order.get_total() * 100)
         try:
             charge = stripe.Charge.create(
                 amount=amount,  # cents
-                currency="usd",
+                currency="inr",
                 source=token
             )
             # create the payment
@@ -201,6 +206,8 @@ class CheckoutView(View):
                     return redirect('core:payment', payment_option='stripe')
                 elif payment_option == 'P':
                     return redirect('core:payment', payment_option='paypal')
+                elif payment_option == 'C':
+                    return redirect('core:payment', payment_option='cash_on_delivery')
                 else:
                     messages.warning(
                         self.request, "Invalid payment option select")
@@ -279,11 +286,11 @@ def remove_from_cart(request, slug):
             messages.info(request, "Item was removed from your cart.")
             return redirect("core:order-summary")
         else:
-            # add a message saying the user dosent have an order
+            # add a message saying the user doesn't have an order
             messages.info(request, "Item was not in your cart.")
             return redirect("core:product", slug=slug)
     else:
-        # add a message saying the user dosent have an order
+        # add a message saying the user doesn't have an order
         messages.info(request, "u don't have an active order.")
         return redirect("core:product", slug=slug)
     return redirect("core:product", slug=slug)
@@ -312,11 +319,11 @@ def remove_single_item_from_cart(request, slug):
             messages.info(request, "This item qty was updated.")
             return redirect("core:order-summary")
         else:
-            # add a message saying the user dosent have an order
+            # add a message saying the user doesn't have an order
             messages.info(request, "Item was not in your cart.")
             return redirect("core:product", slug=slug)
     else:
-        # add a message saying the user dosent have an order
+        # add a message saying the user doesn't have an order
         messages.info(request, "u don't have an active order.")
         return redirect("core:product", slug=slug)
     return redirect("core:product", slug=slug)
@@ -382,3 +389,38 @@ class RequestRefundView(View):
             except ObjectDoesNotExist:
                 messages.info(self.request, "This order does not exist")
                 return redirect("core:request-refund")
+
+
+class MyOrdersView(ListView):
+
+    def get(self, *args, **kwargs):
+        try:
+            my_orders = Order.objects.filter(ordered=True, user=self.request.user)
+            context = {
+                'my_orders': my_orders
+            }
+            return render(self.request, "my_orders.html", context)
+
+        except ObjectDoesNotExist:
+            messages.info(self.request, "You do not have an active order")
+            return redirect("core:home")
+
+
+class ProfileView(View):
+    def get(self, *args, **kwargs):
+        user = self.request.user
+
+        # Get the username, email, first name, and last name of the user
+        username = user.username
+        email = user.email
+        first_name = user.first_name
+        last_name = user.last_name
+
+        context = {
+            'username': username,
+            'email': email,
+            'first_name': first_name,
+            'last_name': last_name
+        }
+
+        return render(self.request, 'profile.html', context)

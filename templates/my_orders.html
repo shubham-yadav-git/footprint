@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+ <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+      .form-control {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da !important;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+
+    </style>
+<h2 class="text-center m -2">My Orders</h2>
+</hr>
+<div class="card-deck m-5">
+    {% if not my_orders %}
+    <h6>You have not ordered anything.</h6>
+    {% endif %}
+
+    {% for order in my_orders %}
+<div class="card border-success mb-3" style="max-width: 18rem;">
+  <div class="card-header bg-transparent border-success">{{ order.ordered_date }}</div>
+  <div class="card-body text-success">
+    {% for item in order.items.all %}
+    <h5 class="card-title">{{ item  }}</h5>
+    {% endfor %}
+    <p class="card-text">Ref. code : {{ order.ref_code }}</p>
+    <p class="card-text">Payment Method : {{ order.payment_method }}</p>
+  </div>
+  <div class="card-footer bg-transparent border-success">Amount : {{ order.payment.amount }}</div>
+</div>
+  {% endfor %}
+</div>
+
+
+{% endblock %}

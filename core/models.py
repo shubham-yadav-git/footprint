@@ -34,6 +34,7 @@ class Slide(models.Model):
     def __str__(self):
         return "{} - {}".format(self.caption1, self.caption2)
 
+
 class Category(models.Model):
     title = models.CharField(max_length=100)
     slug = models.SlugField()
@@ -121,6 +122,7 @@ class Order(models.Model):
         'BillingAddress', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey(
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
+    payment_method = models.CharField(max_length=20, blank=False, null=True)
     coupon = models.ForeignKey(
         'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
     being_delivered = models.BooleanField(default=False)

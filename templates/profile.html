@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <h2>{{ user.username }}'s Profile</h2>
+      <p><strong>First Name:</strong> {{ profile.bio }}</p>
+      <p><strong>Last Name:</strong> {{ profile.location }}</p>
+      <p><strong>Email:</strong> {{ profile.birth_date }}</p>
+        <a href="{% url 'core:my-orders' %}" class="btn btn-primary">My Orders</a>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

@@ -78,6 +78,7 @@ class ItemAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     actions = [copy_items]
 
+
 class CategoryAdmin(admin.ModelAdmin):
     list_display = [
         'title',
