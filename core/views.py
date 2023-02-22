@@ -159,6 +159,7 @@ class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
+
             form = CheckoutForm()
             context = {
                 'form': form,
@@ -201,11 +202,25 @@ class CheckoutView(View):
 
                 # add redirect to the selected payment option
                 if payment_option == 'S':
+                    order.payment_method = "stripe"
+                    order.save()
                     return redirect('core:payment', payment_option='stripe')
                 elif payment_option == 'P':
                     return redirect('core:payment', payment_option='paypal')
+                    order.payment_method = "paypal"
+                    order.save()
                 elif payment_option == 'C':
-                    return redirect('core:payment', payment_option='cash_on_delivery')
+                    amount = int(order.get_total() * 100)
+
+                    # assign the payment to the order
+                    order.payment_method = "cash_on_delivery"
+                    order.ordered = True
+                    # TODO : assign ref code
+                    order.ref_code = create_ref_code()
+                    order.save()
+
+                    messages.success(self.request, "Order was successful")
+                    return redirect("core:my-orders")
                 else:
                     messages.warning(
                         self.request, "Invalid payment option select")

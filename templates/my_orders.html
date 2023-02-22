@@ -44,6 +44,7 @@
         <th scope="col">Items Ordered</th>
         <th scope="col">Ordered Date</th>
         <th scope="col">Price</th>
+        <th scope="col">Payment Method</th>
         <th scope="col">Status</th>
         <th scope="col"></th> <!-- Empty column for cancel button -->
     </tr>
@@ -63,7 +64,13 @@
             {% endfor %}
         </td>
         <td>{{ order.ordered_date }}</td>
+        {% if order.payment_method == "cash_on_delivery" %}
+        <td>{{ order.get_total }}</td>
+        {% endif %}
+        {% if order.payment_method == "stripe" or order.payment_method == "paypal"  %}
         <td>{{ order.payment.amount }}</td>
+        {% endif %}
+        <td>{{ order.payment_method }}</td>
         {% if order.being_delivered %}
         <td>Shipped</td>
         {% endif %}
