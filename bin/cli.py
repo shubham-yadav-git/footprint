@@ -33,7 +33,7 @@ def get_settings_command():
 
 
 @click.command()
-@click.option("--check-env", default=False, help="List environment variables.")
+@click.option("--check-.env", default=False, help="List environment variables.")
 @click.option("--deploying", default=False, help="Deploying to Azure.")
 def main(check_env, deploying):
     """CLI for working with data and deployment"""
@@ -45,7 +45,7 @@ def main(check_env, deploying):
             exit()
 
     # if check_env:
-        # subprocess.call("grep -v '^#' .env | xargs")
+        # subprocess.call("grep -v '^#' ..env | xargs")
 
     migrate = input("Migrate the database? [y/n]: ")
     if migrate == 'y':

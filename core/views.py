@@ -7,10 +7,8 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
 from django.utils import timezone
-from django.contrib.auth.models import User
-from stripe.api_resources import order
 
-from .forms import CheckoutForm, CouponForm, RefundForm
+from .forms import CheckoutForm, CouponForm, RefundForm, CustomUserChangeForm
 from .models import Item, OrderItem, Order, BillingAddress, Payment, Coupon, Refund, Category
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -391,7 +389,7 @@ class RequestRefundView(View):
                 return redirect("core:request-refund")
 
 
-class MyOrdersView(ListView):
+class MyOrdersView(LoginRequiredMixin, ListView):
 
     def get(self, *args, **kwargs):
         try:
@@ -406,7 +404,7 @@ class MyOrdersView(ListView):
             return redirect("core:home")
 
 
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         user = self.request.user
 
@@ -424,3 +422,20 @@ class ProfileView(View):
         }
 
         return render(self.request, 'profile.html', context)
+
+
+@login_required
+def update_profile(request):
+    user = request.user
+
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('core:profile')
+    else:
+        form = CustomUserChangeForm(instance=user)
+
+    return render(request, 'update_profile.html', {'form': form})
+
+

@@ -3,6 +3,7 @@ env
 **/__pycache__
 media
 .DS_Store
+.env
 #*.sqlite3 demo db
 *.env
 venv

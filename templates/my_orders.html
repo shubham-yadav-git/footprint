@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
- <style>
+<style>
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;
@@ -34,28 +34,63 @@
 }
 
 
-    </style>
-<h2 class="text-center m -2">My Orders</h2>
-</hr>
-<div class="card-deck m-5">
+</style>
+<h2 class="card-header">My Orders</h2>
+
+<table class="table text-center">
+    <thead>
+    <tr>
+        <th scope="col">Order ID</th>
+        <th scope="col">Items Ordered</th>
+        <th scope="col">Ordered Date</th>
+        <th scope="col">Price</th>
+        <th scope="col">Status</th>
+        <th scope="col"></th> <!-- Empty column for cancel button -->
+    </tr>
+    </thead>
+    <tbody>
     {% if not my_orders %}
     <h6>You have not ordered anything.</h6>
     {% endif %}
 
     {% for order in my_orders %}
-<div class="card border-success mb-3" style="max-width: 18rem;">
-  <div class="card-header bg-transparent border-success">{{ order.ordered_date }}</div>
-  <div class="card-body text-success">
-    {% for item in order.items.all %}
-    <h5 class="card-title">{{ item  }}</h5>
-    {% endfor %}
-    <p class="card-text">Ref. code : {{ order.ref_code }}</p>
-    <p class="card-text">Payment Method : {{ order.payment_method }}</p>
-  </div>
-  <div class="card-footer bg-transparent border-success">Amount : {{ order.payment.amount }}</div>
-</div>
-  {% endfor %}
-</div>
+    <tr>
+        <td>{{ order.ref_code }}</td>
 
+        <td>
+            {% for item in order.items.all %}
+            <li> {{ item }}</li>
+            {% endfor %}
+        </td>
+        <td>{{ order.ordered_date }}</td>
+        <td>{{ order.payment.amount }}</td>
+        {% if order.being_delivered %}
+        <td>Shipped</td>
+        {% endif %}
+        {% if order.received %}
+        <td>Delivered</td>
+        {% endif %}
+        {% if not order.being_delivered and not order.received %}
+        <td>Processing</td>
+        {% endif %}
+        {% if order.refund_requested %}
+        <td>Processing Refund</td>
+        {% endif %}
+
+        {% if order.refund_granted %}
+        <td>Refund Approved</td>
+        {% endif %}
+        <td>
+            {% if not order.refund_requested or order.refund_granted %}
+            <a href="{% url 'core:request-refund' %}">
+                <button type="button" class="btn btn-danger">Cancel Order</button>
+            </a>
+            {% endif %}
+
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

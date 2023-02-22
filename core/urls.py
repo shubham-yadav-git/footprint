@@ -11,7 +11,7 @@ from .views import (
     PaymentView,
     AddCouponView,
     RequestRefundView,
-    CategoryView, MyOrdersView, ProfileView
+    CategoryView, MyOrdersView, ProfileView, update_profile
 )
 
 app_name = 'core'
@@ -32,5 +32,6 @@ urlpatterns = [
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
     path('request-refund/', RequestRefundView.as_view(), name='request-refund'),
     path('my-orders/', MyOrdersView.as_view(), name='my-orders'),
-    path('profile/', ProfileView.as_view(), name='profile')
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile/update/', update_profile, name='update-profile'),
 ]

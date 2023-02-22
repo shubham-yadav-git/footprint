@@ -3,16 +3,16 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-4">
-      <h2>{{ user.username }}'s Profile</h2>
-      <p><strong>First Name:</strong> {{ profile.bio }}</p>
-      <p><strong>Last Name:</strong> {{ profile.location }}</p>
-      <p><strong>Email:</strong> {{ profile.birth_date }}</p>
-        <a href="{% url 'core:my-orders' %}" class="btn btn-primary">My Orders</a>
+<div class="container mx-auto">
+    <div class="col-md-10 mx-auto">
+      <h2 class="card-header ">{{ user.username }}'s Profile</h2>
+      <div class="card-body">
+      <p><strong>First Name:</strong> {{ user.first_name }}</p>
+      <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+        <a href="{% url 'core:my-orders' %}" class="btn btn-primary">My Orders</a> <a href="{% url 'core:update-profile' %}" class="btn btn-info">Update</a>
     </div>
-  </div>
+      </div>
 </div>
 
 
